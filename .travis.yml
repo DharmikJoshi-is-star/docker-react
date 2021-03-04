@@ -15,6 +15,7 @@ before_install:
 #since it is development level we use Dockerfile.dev
  
 script:
-  - docker run -e CI=true dockerdharmik/docker-react npm run test -- --coverage
+  - docker run dockerdharmik/docker-react npm run test -- --coverage
+#docker run -e CI=true dockerdharmik/docker-react npm run test -- --coverage
 #docker run -e CI=true wilpat/sample-app npm run test -- --coverage
 #scriptis going to contain all the command that are necessary to run our test scripts
