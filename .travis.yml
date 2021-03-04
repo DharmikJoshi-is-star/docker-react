@@ -1,0 +1,19 @@
+language: generic 
+sudo: required 
+#Super user level permission
+
+Services:
+  - docker
+
+#To tell Travis that we require docker preinstalled
+#it will download copy of docker
+
+before_install:
+  - docker build -t dockerdharmik/docker-react -f Dockerfile.dev .
+#some series of commands that needs to be run before deployment or test
+#before running we have to build our project inside Travis using docker
+#since it is development level we use Dockerfile.dev
+ 
+script:
+  - docker run -e CI=true dockerdharmik/docker-react npm run test
+#scriptis going to contain all the command that are necessary to run our test scripts
