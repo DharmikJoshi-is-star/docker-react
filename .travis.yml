@@ -16,7 +16,55 @@ before_install:
  
 script:
   - docker run -e CI=true dockerdharmik/docker-react npm run test -- --coverage
-#docker run dockerdharmik/docker-react npm run test -- --coverage
-#docker run -e CI=true dockerdharmik/docker-react npm run test -- --coverage
-#docker run -e CI=true wilpat/sample-app npm run test -- --coverage
-#scriptis going to contain all the command that are necessary to run our test scripts
+#script is going to contain all the command that are necessary to run our test scripts
+#bu default npm run test runs testing on project then waits for the user to give input
+#-e CI=true and -- --coverage will stop testing after running test for the first time 
+
+deploy:
+  provider: elasticbeanstalk
+  #travis ci comes with precongigured to deploy our application to a handful of different hosting provider
+  #mentioning elasticbeanstalk will follow the predefined configuration
+  region: "us-east-1"
+  #region depend upon on which region server we have uploaded our application
+  #to get that you can use the url of application http://dockerreact-env.eba-meppsgaa.us-east-1.elasticbeanstalk.com/  "us-east-1"
+  app: "docker-react"
+  #provide the name of app created on aws
+  env: "Dockerreact-env"
+  #provide the name of environment created on aws
+  bucket_name: "elasticbeanstalk-us-east-1-560246381809"
+  #When travis decides to deploy your code it gonna take all the files zip them into single file and copy all them in a S3 bucket
+  #then beanstalk will redeploy the application
+  #this bucket is automatically generated for your application when we created elasticbeanstalk instance
+  #to find the name of the bucket
+  #in services search for s3 (Scalable storage in the cloud)
+  #in this search with elasticbeanstalk with name of the region
+  #copy the name of the bucket
+  bucket_path: "docker-react"
+  #bucket path will present in bucket
+  #but initially bucket path won't be present there by default automatically
+  #that folder gets only created when you deploy or the first time
+  #by default will name bucket_path same as application name
+  on: 
+    branch: master
+  #only attempt to deploy the application when master branch is changed
+
+  #last we have to add API keys that is going to provide the access to tavis over aws account
+  #to generate them
+  #We have create new user that essentilly used by travis ci for access
+  #go to aws ->in services -> search for IAM -> in Users ->  Add User -> enter username (docker-react-travis-ci-by dharmik) -> programmatic access only -> attach existing policies directory -> search for beanstalk -> select provide full access -> next -> create user -> copy Secret access key(it will only shown to you for one time) and also copy access key Id
+  #Now we don't want every one to see and access these keys we will not directly add them into this yml file
+  #instead we are going to use the feature as environment secrets provided by travisCI
+  #go to travis dashboard
+  #inside of docker-react app(https://travis-ci.org/github/DharmikJoshi-is-star/docker-react)
+  #there is button for more options click on it
+  # go to settings
+  #find environment variables
+  #in this environment variables we are going to stash thode secret keys
+  #it will be encrypted and stored by travis ci
+  #Now copy the access key of aws user
+  #set key as AWS_ACCESS_KEY and value as AKIAYE4KJLTY....
+  #set key as AWS_SECRET_KEY and values as nKUm2mw6a5T9Qt4T3hxDdJL....
+  # set Display value in building as off
+  access_key_id: $AWS_ACCESS_KEY 
+  secret_access_key: $AWS_SECRET_KEY
+  
